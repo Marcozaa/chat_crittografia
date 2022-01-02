@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    body {
+      margin: 0;
+      padding-bottom: 3rem;
+      background: #242424;
+      color: grey;
+      font-family: "Roboto Mono", monospace;
+      margin: 0;
+      display: flex;
+    }
+
+    .left {}
+
+    .right {
+      width: 40vw;
+      height: 90vh;
+      position: fixed;
+      right: 0;
+      top: 0;
+      padding-left: 10px;
+      border-left: 1px solid white;
+    }
+
+    .right>.notification-log {
+      height: 30%;
+      width: 100%;
+      font-size: 0.5rem;
+      color: white;
+      overflow-y: scroll;
+    }
+
+    .right>.change_room {
+      font-size: 0.5rem;
+      color: white;
+      height: 30%;
+    }
+
+    .right>.keys {
+      font-size: 0.5rem;
+      color: white;
+    }
+
+    #form {
+      background: rgba(0, 0, 0, 0.15);
+      padding: 0.25rem;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      height: 3rem;
+      box-sizing: border-box;
+      backdrop-filter: blur(10px);
+    }
+
+    #input {
+      border: none;
+      padding: 0 1rem;
+      flex-grow: 1;
+      border-radius: 2rem;
+      margin: 0.25rem;
+    }
+
+    #input:focus {
+      outline: none;
+    }
+
+    #form>button {
+      background: #333;
+      border: none;
+      padding: 0 1rem;
+      margin: 0.25rem;
+      border-radius: 3px;
+      outline: none;
+      color: #fff;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages>li {
+      padding: 0.5rem 1rem;
+    }
+
+    .right>.top-top {
+      font-size: 0.5rem;
+    }
+
+    .logs {}
+
+    #messages>li:nth-child(odd) {}
+  </style>
+</head>
+
+<body>
+  <div class="left">
+    <ul id="messages"></ul>
+  </div>
+  <div class="right">
+    <div class="top-top">
+    </div>
+    <div class="notification-log">
+      <div class="top">
+        <h1>NOTIFICATION_LOG</h1>
+      </div>
+      <div class="content">
+        <ul id="logs"></ul>
+
+      </div>
+    </div>
+    <div class="change_room">
+      <div class="top-room">
+        <h1>CHANGE:ROOM()</h1>
+      </div>
+      <div class="content-room">
+        <form id="roomform">
+          <input id="changeroom" type="text" />
+
+        </form>
+      </div>
+    </div>
+
+    <div class="keys">
+      <div class="top-keys">
+        <h1>keys[public]</public>
+        </h1>
+      </div>
+      <div class="content-keys">
+
+      </div>
+    </div>
+  </div>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" /><button>Send</button>
+  </form>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+
+    var work = new Worker("worker.js");
+    work.addEventListener('message', function (e) {
+      console.log('Worker said: ', e.data);
+    }, false);
+
+    work.postMessage('Hello World');
+
+
+
+    var socket = io();
+
+    var messages = document.getElementById("messages");
+    var form = document.getElementById("form");
+    var input = document.getElementById("input");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit("chat message", input.value);
+        input.value = "";
+      }
+    });
+
+
+    var form2 = document.getElementById("roomform");
+    var input2 = document.getElementById("changeroom");
+    form2.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (input2.value) {
+        console.log(input2.value)
+        socket.emit("room-change", input2.value);
+        input2.value = "";
+      }
+    })
+
+    socket.on("chat message", function (msg, id) {
+      var item = document.createElement("li");
+      var x = window.matchMedia("(max-width: 600px)")
+
+      if (x.matches) {
+        item.textContent = "> " + msg;
+
+      } else {
+        item.textContent = id + "> " + msg;
+      }
+      if (id != socket.id) {
+        item.style.color = "white";
+      } else {
+        item.style.color = "lightgrey";
+        if (x.matches) {
+          item.textContent = "(you)> " + msg;
+
+        } else {
+          item.textContent = id + "(you)> " + msg;
+
+        }
+
+      }
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+
+    socket.on("user", function (id) { });
+
+    socket.on("connection", function (id, stanza) {
+      var log = document.createElement("li");
+      log.style.fontSize = "0.8rem"
+      log.style.margin = 0;
+      log.style.padding = 0;
+      log.textContent = id + " si è unito alla stanza " + stanza;
+      logs.appendChild(log)
+    })
+
+    socket.on("disconnessione_stanza", function (id) {
+
+      var log = document.createElement("li");
+      log.style.fontSize = "0.8rem"
+      log.style.margin = 0;
+      log.style.padding = 0;
+      log.textContent = id + " è uscito dalla stanza";
+      logs.appendChild(log)
+    })
+
+    /*var worker = new Worker('worker.js')
+    worker.postMessage('Happy Birthday!')
+
+    worker.addEventListener('message', function (e) {
+      console.log(e.data);
+    })*/
+
+  </script>
+</body>
+
+</html>
