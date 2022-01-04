@@ -148,12 +148,14 @@
 
 
     var work = new Worker("worker.js");
-    var data;
+    var data = [];
     var c=0;
     work.addEventListener('message', function (e) {
+      /*
       data[c] = e.data;
       console.log('Worker said: ', e.data);
       c++;
+      */
     }, false);
 
     work.postMessage('Hello World');
