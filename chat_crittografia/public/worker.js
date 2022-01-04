@@ -11,18 +11,21 @@ while (p == q) {
   p = numeriPrimi[Math.floor(Math.random() * i)]; // Primo numero primo 
   q = numeriPrimi[Math.floor(Math.random() * i)]; // Secondo numero primo   
 }
-p = 2;
-q = 7;
+p = 53;
+q = 59;
 var n = p * q;
 var phi = (p - 1) * (q - 1);
 var e_pub = trova_e();
 
-console.log("e:" + e_pub);
+//console.log("e:" + e_pub);
 d = trova_d();
-console.log("d: " + d);
+//console.log("d: " + d);
 
-console.log("Messaggio crittografato" + critta(15))
-console.log("Messaggio decrittato" + decritta(critta(15)))
+console.log("Chiave privata("+d+ ","+n+")")
+console.log("Chiave pubblica("+e_pub+ ","+n+")")
+
+console.log("Messaggio crittografato " + critta(29))
+console.log("Messaggio decrittato " + decritta(critta(29)))
 
 function trova_e() {
   for (var i = 2; i <= phi; i++) {
@@ -72,27 +75,27 @@ function trova_d() {
     
     d = ((k * phi) + 1) % e_pub;
 
-    console.log("(" + k + "*" + phi + ") +1 + %" + e_pub + " = " + d);
+    //console.log("(" + k + "*" + phi + ") +1 + %" + e_pub + " = " + d);
     k++;
   }
   k -= 1
-console.log("K E': "+ k + " d è: " +d)
+//console.log("K E': "+ k + " d è: " +d)
   //Hence, for k = 9
   d = (k * phi + 1) / e_pub
 
   if( d == e_pub){
     // d= 5 e e_pub = 5
     k++;
-    console.log("------------------------------->>>k " + k)
+    //console.log("------------------------------->>>k " + k)
     while (d != 0) {
 
       d = ((k * phi) + 1) % e_pub;
 
-      console.log("(" + k + "*" + phi + ") +1 + %" + e_pub + " = " + d);
+      //console.log("(" + k + "*" + phi + ") +1 + %" + e_pub + " = " + d);
       k++;
     }
     k -= 1;
-    console.log("------------------------------->>>k 22222" + k)
+    //console.log("------------------------------->>>k 22222" + k)
     return d = ((k * phi) + 1) / e_pub;
 
 
@@ -101,13 +104,40 @@ console.log("K E': "+ k + " d è: " +d)
   }
 }
 
+function pow_p(a,b){
+  var t = a;
+  for(var c=0; c < b ;c++){
+    a = a*t;
+  }
+  return a;
+}
+// calculates   base^exponent % modulus
+function modular_pow(base, exponent, modulus){
+    if (modulus === 1) return 0;
+    var result = 1;
+    base = base % modulus;
+    while (exponent > 0) {
+        if (exponent % 2 === 1)  //odd number
+            result = (result * base) % modulus;
+        exponent = exponent >> 1; //divide by 2
+        base = (base * base) % modulus;
+    }
+    return result;
+}
+
 function critta(m){
-  c = ( Math.pow(m, e_pub) ) % n;
+  c = modular_pow(m, e_pub, n);
+  console.log("C= " + c);
+  // So, you calculate c=(…((m⋅mmodn)⋅mmodn)⋅…⋅mmodn)
+
+  //c = ( Math.pow(m, e_pub) ) % n;
   return c;
 }
 
 function decritta(m) {
-  m2 = (Math.pow(m, d)) % n;
+ // m2 = (Math.pow(m, d)) % n;
+
+ m2 = modular_pow(m, d, n)
   return m2;
 }
 
