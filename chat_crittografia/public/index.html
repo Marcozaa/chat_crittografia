@@ -161,7 +161,7 @@
         chiavePubblica[1] = [e.data];
         console.log("La chiave pubblica è: " + chiavePubblica)
 
-        socket.emit("chiave-pubblica", chiavePubblica)
+        socket.emit("chiave-pubblica", chiavePubblica, socket.id)
 
       }
 
@@ -199,17 +199,20 @@
       }
     })
 
-    socket.on("public-key", function (chiave) {
+    socket.on("public-key", function (chiave, id_utente) {
       var key = document.createElement("li");
       key.style.fontSize = "0.8rem"
       key.style.margin = 0;
       key.style.padding = 0;
 
       if (JSON.stringify(chiave[0]) == JSON.stringify(chiavePubblica[0])) {
-        key.id = socket.id;
+        
+        
         key.style.fontSize = "3rem"
         key.style.color = "green"
       }
+      key.id = id_utente;
+      key.className = "userKey"
       key.textContent = chiave;
       document.getElementById("keys").appendChild(key)
     })
@@ -255,6 +258,7 @@
 
     socket.on("disconnessione_stanza", function (id) {
 
+      //console.log("Id persona disconnessa : "+id)
       var log = document.createElement("li");
       log.style.fontSize = "0.8rem"
       log.style.margin = 0;
@@ -263,12 +267,22 @@
       //console.log(document.getElementById(id).value);
       var ul = document.getElementById("keys");
 
-      document.querySelectorAll('*').forEach(function (node) {
-        console.log(node.id)
+      /*document.getElementsByClassName('userKey').forEach(function (node) {
+        console.log(node.id +"  ==  "+  id)
         if(node.id == id){
           node.style.fontSize = "5rem"
         }
-      });
+      });*/
+
+
+      var elements = document.getElementsByClassName("userKey");
+      for (var i = 0, len = elements.length; i < len; i++) {
+          console.log(elements[i].id+ " -- " + elements[i].innerHTML)
+          if(elements[i].id == id){
+              elements[i].remove()
+              
+          }
+      }
 
       document.getElementById("logs").appendChild(log)
     })

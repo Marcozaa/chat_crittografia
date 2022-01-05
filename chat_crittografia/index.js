@@ -30,24 +30,27 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
     // io.to(stanza).emit('user',  socket.id);
   });
 
-  socket.on("chiave-pubblica", (chiave_pubblica) => {
+  socket.on("chiave-pubblica", (chiave_pubblica, id) => {
+    console.log("chiave pubblica di "+ id)
     console.log("hello world")
-    io.to(stanza).emit("public-key", chiave_pubblica )
+    io.to(stanza).emit("public-key", chiave_pubblica , id)
   })
 
   // Gestione disconnessione da stanza
-  socket.on('disconnect', (socket) => { // Gestione disconnessione di un utente
-    console.log('user disconnected');
+  socket.on('disconnect', () => { // Gestione disconnessione di un utente
+    console.log('user disconnected' + socket.id);
     io.to(stanza).emit("disconnessione_stanza", socket.id)
   });
 
 
   // Gestione cambio da stanza
   socket.on('room-change', (roomid) => {
+    io.to(stanza).emit("disconnessione_stanza", socket.id)
     socket.leave(stanza);
     stanza = roomid;
     socket.join(roomid);
     console.log("room changed to " + roomid)
+
   });
 
   socket
