@@ -134,7 +134,7 @@
         </h1>
       </div>
       <div class="content-keys">
-
+        <ul id="keys"></ul>
       </div>
     </div>
   </div>
@@ -149,14 +149,26 @@
 
     var work = new Worker("worker.js");
     var data = [];
-    var c=0;
+    var c = 0;
+    var chiavePubblica = []
     work.addEventListener('message', function (e) {
-      /*
       data[c] = e.data;
       console.log('Worker said: ', e.data);
       c++;
-      */
+      if (c == 2) {
+        chiavePubblica[0] = [e.data];
+      } if (c == 4) {
+        chiavePubblica[1] = [e.data];
+        console.log("La chiave pubblica è: " + chiavePubblica)
+
+        socket.emit("chiave-pubblica", chiavePubblica)
+
+      }
+
     }, false);
+
+
+
 
     work.postMessage('Hello World');
 
@@ -182,10 +194,24 @@
     form2.addEventListener("submit", function (e) {
       e.preventDefault();
       if (input2.value) {
-        console.log(input2.value)
         socket.emit("room-change", input2.value);
         input2.value = "";
       }
+    })
+
+    socket.on("public-key", function (chiave) {
+      var key = document.createElement("li");
+      key.style.fontSize = "0.8rem"
+      key.style.margin = 0;
+      key.style.padding = 0;
+
+      if (JSON.stringify(chiave[0]) == JSON.stringify(chiavePubblica[0])) {
+        key.id = socket.id;
+        key.style.fontSize = "3rem"
+        key.style.color = "green"
+      }
+      key.textContent = chiave;
+      document.getElementById("keys").appendChild(key)
     })
 
     socket.on("chat message", function (msg, id) {
@@ -224,6 +250,7 @@
       log.style.padding = 0;
       log.textContent = id + " si è unito alla stanza " + stanza;
       logs.appendChild(log)
+      
     })
 
     socket.on("disconnessione_stanza", function (id) {
@@ -233,7 +260,17 @@
       log.style.margin = 0;
       log.style.padding = 0;
       log.textContent = id + " è uscito dalla stanza";
-      logs.appendChild(log)
+      //console.log(document.getElementById(id).value);
+      var ul = document.getElementById("keys");
+
+      document.querySelectorAll('*').forEach(function (node) {
+        console.log(node.id)
+        if(node.id == id){
+          node.style.fontSize = "5rem"
+        }
+      });
+
+      document.getElementById("logs").appendChild(log)
     })
 
     /*var worker = new Worker('worker.js')

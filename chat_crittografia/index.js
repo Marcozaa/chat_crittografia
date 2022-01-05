@@ -30,9 +30,15 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
     // io.to(stanza).emit('user',  socket.id);
   });
 
+  socket.on("chiave-pubblica", (chiave_pubblica) => {
+    console.log("hello world")
+    io.to(stanza).emit("public-key", chiave_pubblica )
+  })
+
   // Gestione disconnessione da stanza
-  socket.on('disconnect', () => { // Gestione disconnessione di un utente
+  socket.on('disconnect', (socket) => { // Gestione disconnessione di un utente
     console.log('user disconnected');
+    io.to(stanza).emit("disconnessione_stanza", socket.id)
   });
 
 
