@@ -36,8 +36,7 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
   });
 
   socket.on("invio-mia-chiave", (chiave, id, idOwner) => {
-          console.log("inserisco la chiave " + chiave + " di " + idOwner + " a " + id)
-
+    console.log("inserisco la chiave " + chiave + " di " + idOwner + " a " + id)
     io.to(id).emit("chiave-inserire", chiave, id, idOwner)
   })
 
