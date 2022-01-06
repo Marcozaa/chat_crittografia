@@ -4,6 +4,8 @@
 <head>
   <title>Socket.IO chat</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300&display=swap');
+
     body {
       margin: 0;
       padding-bottom: 3rem;
@@ -38,6 +40,7 @@
       font-size: 0.5rem;
       color: white;
       height: 30%;
+
     }
 
     .right>.keys {
@@ -53,9 +56,10 @@
       left: 0;
       right: 0;
       display: flex;
-      height: 3rem;
+      height: 4rem;
       box-sizing: border-box;
       backdrop-filter: blur(10px);
+
     }
 
     #input {
@@ -64,6 +68,8 @@
       flex-grow: 1;
       border-radius: 2rem;
       margin: 0.25rem;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+
     }
 
     #input:focus {
@@ -92,6 +98,39 @@
 
     .right>.top-top {
       font-size: 0.5rem;
+    }
+
+    #changeroom {
+      background: none;
+      outline: none;
+      border: 2px solid white;
+      color: white;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      margin-right: 0;
+      padding-right: 0;
+
+
+    }
+
+    #changeroombtn {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      margin-left: 0;
+      padding-left: 0;
+      background: none;
+      cursor: pointer;
+      border: 2px solid yellow;
+      color: white;
+      padding: 0.6rem;
+      transition: 1s ease;
+    }
+
+    #changeroombtn:hover {
+      background: yellow;
+      color: #242424;
+    }
+
+    #roomform {
+      display: flex
     }
 
     .logs {}
@@ -123,7 +162,7 @@
       <div class="content-room">
         <form id="roomform">
           <input id="changeroom" type="text" />
-
+          <button id="changeroombtn">JOIN</button>
         </form>
       </div>
     </div>
@@ -206,8 +245,8 @@
       key.style.padding = 0;
 
       if (JSON.stringify(chiave[0]) == JSON.stringify(chiavePubblica[0])) {
-        
-        
+
+
         key.style.fontSize = "3rem"
         key.style.color = "green"
       }
@@ -246,14 +285,31 @@
 
     socket.on("user", function (id) { });
 
+
+    // ---------------------------------- DATA
+
+    const pad = num => ("0" + num).slice(-2);
+
+    const getTimeFromDate = timestamp => {
+      const date = new Date(timestamp * 1000);
+      let hours = date.getHours(),
+        minutes = date.getMinutes(),
+        seconds = date.getSeconds();
+      return pad(hours) + ":" + pad(minutes) + ":" + pad(seconds)
+    }
+
+
+    // -----------------------------------
     socket.on("connection", function (id, stanza) {
       var log = document.createElement("li");
       log.style.fontSize = "0.8rem"
       log.style.margin = 0;
       log.style.padding = 0;
-      log.textContent = id + " si è unito alla stanza " + stanza;
+      log.style.listStyleType = "none"
+      var data = getTimeFromDate(Math.floor((new Date()).getTime() / 1000))
+      log.textContent = data + "      " + id + " si è unito alla stanza " + stanza;
       logs.appendChild(log)
-      
+
     })
 
     socket.on("disconnessione_stanza", function (id) {
@@ -263,7 +319,9 @@
       log.style.fontSize = "0.8rem"
       log.style.margin = 0;
       log.style.padding = 0;
-      log.textContent = id + " è uscito dalla stanza";
+      log.style.listStyleType = "none"
+      var data = getTimeFromDate(Math.floor((new Date()).getTime() / 1000))
+      log.textContent = data + "      " + id + " è uscito dalla stanza";
       //console.log(document.getElementById(id).value);
       var ul = document.getElementById("keys");
 
@@ -277,11 +335,11 @@
 
       var elements = document.getElementsByClassName("userKey");
       for (var i = 0, len = elements.length; i < len; i++) {
-          console.log(elements[i].id+ " -- " + elements[i].innerHTML)
-          if(elements[i].id == id){
-              elements[i].remove()
-              
-          }
+        console.log(elements[i].id + " -- " + elements[i].innerHTML)
+        if (elements[i].id == id) {
+          elements[i].remove()
+
+        }
       }
 
       document.getElementById("logs").appendChild(log)
