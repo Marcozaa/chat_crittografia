@@ -268,6 +268,7 @@ console.log(
 self.postMessage(messaggioCrittato)
   
 };
+
 function decritta(m) {
   m2 = modular_pow(m, d, n);
   return m2;

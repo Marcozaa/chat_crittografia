@@ -242,6 +242,9 @@
       }
     })
 
+
+    var chiavePubblica_Other = ""
+
     socket.on("public-key", function (chiave, id_utente) {
       var key = document.createElement("li");
       key.style.fontSize = "0.8rem"
@@ -256,6 +259,7 @@
         key.style.color = "green"
       }
       else {
+        chiavePubblica_Other = chiave
         // inviare al proprietario di questa chiave la propria chiave
         socket.emit("invio-mia-chiave", chiavePubblica, key.id, socket.id)
 
@@ -303,7 +307,7 @@
       }
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
-      work.postMessage([msg, chiavePubblica])
+      work.postMessage([msg, chiavePubblica_Other])
     });
 
     socket.on("user", function (id) { });
