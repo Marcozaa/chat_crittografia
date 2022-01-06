@@ -19,13 +19,6 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
 
   // Gestione invio messaggi
   socket.on('chat message', (msg) => { // Quando viene crato un messaggio viene avviata questa funzione
-    
-
-
-
-
-
-
     io.to(stanza).emit('chat message', msg, socket.id); // Viene emessa un'altra notifica con il messaggio e chi l'ha inviato
     // io.to(stanza).emit('user',  socket.id);
   });
@@ -41,6 +34,12 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
     console.log('user disconnected' + socket.id);
     io.to(stanza).emit("disconnessione_stanza", socket.id)
   });
+
+  socket.on("invio-mia-chiave", (chiave, id, idOwner) => {
+          console.log("inserisco la chiave " + chiave + " di " + idOwner + " a " + id)
+
+    io.to(id).emit("chiave-inserire", chiave, id, idOwner)
+  })
 
 
   // Gestione cambio da stanza

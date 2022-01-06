@@ -243,6 +243,7 @@
       key.style.fontSize = "0.8rem"
       key.style.margin = 0;
       key.style.padding = 0;
+      key.id = id_utente;
 
       if (JSON.stringify(chiave[0]) == JSON.stringify(chiavePubblica[0])) {
 
@@ -250,7 +251,24 @@
         key.style.fontSize = "3rem"
         key.style.color = "green"
       }
-      key.id = id_utente;
+      else {
+        // inviare al proprietario di questa chiave la propria chiave
+        socket.emit("invio-mia-chiave", chiavePubblica, key.id, socket.id)
+
+      }
+      key.className = "userKey"
+      key.textContent = chiave;
+      document.getElementById("keys").appendChild(key)
+    })
+
+    socket.on("chiave-inserire", function (chiave, id, idOwner) {
+
+      console.log("inserisco la chiave " + chiave + " di " + idOwner + " a " + id)
+      var key = document.createElement("li");
+      key.style.fontSize = "0.8rem"
+      key.style.margin = 0;
+      key.style.padding = 0;
+      key.id = idOwner;
       key.className = "userKey"
       key.textContent = chiave;
       document.getElementById("keys").appendChild(key)
