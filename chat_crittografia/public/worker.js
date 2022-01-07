@@ -111,6 +111,8 @@ var e_pub = trova_e();
 
 d = trova_d();
 
+/*
+
 var messaggio =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 const separazioneSpazi = messaggio.split(" ");
@@ -142,7 +144,7 @@ console.log("Chiave pubblica(" + e_pub + "," + n + ")");
 
 console.log("Messaggio crittografato " + critta(12302));
 console.log("Messaggio decrittato " + decritta(critta(12302)));
-
+*/
 function trova_e() {
   for (var i = 2; i <= phi; i++) {
     if (gcd_rec(i, phi) == 1) {
@@ -233,8 +235,20 @@ function critta(m) {
   c = modular_pow(m, e_pub, n);
   return c;
 }
+
+function critta_chiavePubblica_destinatario(m,e_pub,n){
+  c = modular_pow(m, e_pub, n);
+  return c;
+}
+
+function decritta(m) {
+  m2 = modular_pow(m, d, n);
+  return m2;
+}
+
 onmessage = function (e) {
-  console.log("e.data " + e.data[0]+ " chiave " + e.data[1]);
+  console.log("e.data " + e.data[0]+ " chiave " + e.data[1][0]);
+
 
   var messaggio = e.data[0];
   const separazioneSpazi = messaggio.split(" ");
@@ -244,7 +258,7 @@ onmessage = function (e) {
     for (var j = 0; j < separazioneSpazi[i].length; j++) {
       // Critta
       messaggioCrittato += String.fromCharCode(
-        critta(separazioneSpazi[i][j].charCodeAt(0))
+        critta_chiavePubblica_destinatario(separazioneSpazi[i][j].charCodeAt(0), e.data[1][0], e.data[1][1])
       );
     }
   }
@@ -268,11 +282,6 @@ console.log(
 self.postMessage(messaggioCrittato)
   
 };
-
-function decritta(m) {
-  m2 = modular_pow(m, d, n);
-  return m2;
-}
 
 function gcd_rec(a, b) {
   if (b) {

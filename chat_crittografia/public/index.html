@@ -200,21 +200,29 @@
       } if (c == 4) {
         chiavePubblica[1] = [e.data];
         console.log("La chiave pubblica è: " + chiavePubblica)
-
         socket.emit("chiave-pubblica", chiavePubblica, socket.id)
 
       }
-
-
-
-
     }, false);
 
+    
 
+    var workCrypto = new Worker("cryptoWorker.js");
+    var messaggio_crittografato_chiavepub_other;
+    
+    workCrypto.addEventListener('message', function (e) {
 
+      return new Promise((res, rej) => {
+      messaggio_crittografato_chiavepub_other = e.data
 
+      }).then(()=> {
+        sendCrypted(messaggio_crittografato_chiavepub_other)
+      })
 
-
+      
+      
+    
+    }, false);
 
 
     var socket = io();
@@ -222,6 +230,14 @@
     var messages = document.getElementById("messages");
     var form = document.getElementById("form");
     var input = document.getElementById("input");
+
+
+
+    function  sendCrypted(messaggio){
+      socket.emit("chat message", messaggio);
+
+    }
+
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -253,13 +269,10 @@
       key.id = id_utente;
 
       if (JSON.stringify(chiave[0]) == JSON.stringify(chiavePubblica[0])) {
-
-
         key.style.fontSize = "3rem"
         key.style.color = "green"
       }
       else {
-        chiavePubblica_Other = chiave
         // inviare al proprietario di questa chiave la propria chiave
         socket.emit("invio-mia-chiave", chiavePubblica, key.id, socket.id)
 
@@ -279,6 +292,7 @@
       key.id = idOwner;
       key.className = "userKey"
       key.textContent = chiave;
+      chiavePubblica_Other = chiave
       document.getElementById("keys").appendChild(key)
     })
 
@@ -290,7 +304,7 @@
         item.textContent = "> " + msg;
 
       } else {
-        item.textContent = id + "> " + msg;
+        item.textContent = id + "> " + msg; 
       }
       if (id != socket.id) {
         item.style.color = "white";
@@ -307,7 +321,11 @@
       }
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
+      console.log("postMess = " + chiavePubblica_Other);
       work.postMessage([msg, chiavePubblica_Other])
+      workCrypto.postMessage(["prova testing prova messaggi", chiavePubblica_Other])
+
+      
     });
 
     socket.on("user", function (id) { });

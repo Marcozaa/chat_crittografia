@@ -25,7 +25,6 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
 
   socket.on("chiave-pubblica", (chiave_pubblica, id) => {
     console.log("chiave pubblica di "+ id)
-    console.log("hello world")
     io.to(stanza).emit("public-key", chiave_pubblica , id)
   })
 
