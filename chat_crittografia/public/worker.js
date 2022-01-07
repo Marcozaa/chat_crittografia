@@ -93,23 +93,6 @@ var numeriPrimi = [
   9829, 9833, 9839, 9851, 9857, 9859, 9871, 9883, 9887, 9901, 9907, 9923, 9929,
   9931, 9941, 9949, 9967, 9973,
 ];
-var n, phi, p, q, e_pub, d;
-
-var i = 0;
-while (numeriPrimi[i] != null) {
-  i++;
-}
-var p, q;
-while (p == q) {
-  p = numeriPrimi[Math.floor(Math.random() * i)]; // Primo numero primo
-  q = numeriPrimi[Math.floor(Math.random() * i)]; // Secondo numero primo
-}
-
-var n = p * q;
-var phi = (p - 1) * (q - 1);
-var e_pub = trova_e();
-
-d = trova_d();
 
 /*
 
@@ -139,19 +122,11 @@ for (var i = 0; i < separazioneSpazi.length; i++) {
 console.log("messaggio crittato: " + messaggioCrittato);
 console.log("messaggio decrittato: " + messaggioDecrittato);
 
-console.log("Chiave privata(" + d + "," + n + ")");
-console.log("Chiave pubblica(" + e_pub + "," + n + ")");
+
 
 console.log("Messaggio crittografato " + critta(12302));
 console.log("Messaggio decrittato " + decritta(critta(12302)));
-*/
-function trova_e() {
-  for (var i = 2; i <= phi; i++) {
-    if (gcd_rec(i, phi) == 1) {
-      return i;
-    }
-  }
-}
+
 
 function numberToString(num) {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -189,30 +164,10 @@ So k=9 is our answer. Notice that we did not stop at k=4, because that would giv
 and the idea here is that d and e cannot be the same.
 Hence, for k=9
 d = (k*Φ(n) + 1) / e = 11.
- */
 
-function trova_d() {
-  var d = 0.2;
-  var k = 1;
-  while (d != 0) {
-    d = (k * phi + 1) % e_pub;
-    k++;
-  }
-  k -= 1;
-  d = (k * phi + 1) / e_pub;
 
-  if (d == e_pub) {
-    k++;
-    while (d != 0) {
-      d = (k * phi + 1) % e_pub;
-      k++;
-    }
-    k -= 1;
-    return (d = (k * phi + 1) / e_pub);
-  } else {
-    return (d = (k * phi + 1) / e_pub);
-  }
-}
+
+
 
 // calcolo potenza modulare ((m^exp % mod)m^exp % mod)....
 function modular_pow(base, exponent, modulus) {
@@ -247,7 +202,7 @@ function decritta(m) {
 }
 
 onmessage = function (e) {
-  console.log("e.data " + e.data[0]+ " chiave " + e.data[1][0]);
+  //console.log("e.data " + e.data[0]+ " chiave " + e.data[1][0]);
 
 
   var messaggio = e.data[0];
@@ -272,16 +227,72 @@ onmessage = function (e) {
     }
   }
   
-  console.log(
-    "Message received from main script (crypted) " + messaggioCrittato
-  );
-console.log(
-    "Message received from main script (decrypted) " + messaggioDecrittato
-  );
+  //console.log("Message received from main script (crypted) " + messaggioCrittato );
+  //console.log("Crypt con e_pub: " + e_pub + " N: " + n);
+  //console.log("Decrypt con d: " + d + " N: " + n)
+  //console.log( "Message received from main script (decrypted) " + messaggioDecrittato );
   messaggioCrittato = messaggioCrittato
-self.postMessage(messaggioCrittato)
   
 };
+
+ */
+
+
+
+var n, phi, p, q, e_pub, d;
+
+var i = 0;
+while (numeriPrimi[i] != null) {
+  i++;
+}
+var p, q;
+while (p == q) {
+  p = numeriPrimi[Math.floor(Math.random() * i)]; // Primo numero primo
+  q = numeriPrimi[Math.floor(Math.random() * i)]; // Secondo numero primo
+}
+
+var n = p * q;
+var phi = (p - 1) * (q - 1);
+var e_pub = trova_e();
+
+d = trova_d();
+
+
+function trova_e() {
+  for (var i = 2; i <= phi; i++) {
+    if (gcd_rec(i, phi) == 1) {
+      return i;
+    }
+  }
+}
+
+
+function trova_d() {
+  var d = 0.2;
+  var k = 1;
+  while (d != 0) {
+    d = (k * phi + 1) % e_pub;
+    k++;
+  }
+  k -= 1;
+  d = (k * phi + 1) / e_pub;
+
+  if (d == e_pub) {
+    k++;
+    while (d != 0) {
+      d = (k * phi + 1) % e_pub;
+      k++;
+    }
+    k -= 1;
+    return (d = (k * phi + 1) / e_pub);
+  } else {
+    return (d = (k * phi + 1) / e_pub);
+  }
+}
+
+//console.log("E_PUB: " + e_pub);
+console.log("Chiave privata(" + d + "," + n + ")");
+//console.log("Chiave pubblica(" + e_pub + "," + n + ")");
 
 function gcd_rec(a, b) {
   if (b) {
@@ -306,7 +317,7 @@ self.addEventListener(
     self.postMessage(n);
     self.postMessage(phi);
     self.postMessage(e_pub);
-    
+    self.postMessage(d);
   },
   false
 );

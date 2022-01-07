@@ -26,6 +26,8 @@ for (var i = 0; i < separazioneSpazi.length; i++) {
 
 */
 
+
+
 var n, phi, p, q, e_pub, d;
 
 
@@ -61,43 +63,51 @@ function modular_pow(base, exponent, modulus) {
   var messaggioCrittato;
   
 
-  function critta_chiavePubblica_destinatario(m,e_pub,n){
-    c = modular_pow(m, e_pub, n);
-    return c;
+  function decritta_chiavePrivataUtente(m,d,n){
+    m2 = modular_pow(m, d, n);
+    return m2;
   }
   
 
-  onmessage = function (e) {
 
-    console.log("e.data worker2 = " + e.data[0] + " CHIAVE OTHER = " + e.data[1]); 
+  onmessage = function (e) {
+    console.log("e.data worker3 = " + e.data[0] + " CHIAVE PRIVATA = " + e.data[1][0]+ ","+ e.data[1][1]);
   
   
     var messaggio = e.data[0];
     const separazioneSpazi = messaggio.split(" ");
-    var messaggioCrittato = "";
+    var messaggio_crittografato = e.data[0];
+    var messaggioDecrittato = "";
+
+/*
+
     for (var i = 0; i < separazioneSpazi.length; i++) {
       for (var j = 0; j < separazioneSpazi[i].length; j++) {
         // Critta
         messaggioCrittato += String.fromCharCode(
           critta_chiavePubblica_destinatario(separazioneSpazi[i][j].charCodeAt(0), e.data[1][0], e.data[1][1])
-          
         );
       }
     }
-    
-    /*
-    for (var i = 0; i < separazioneSpazi.length; i++) {
-      for (var j = 0; j < separazioneSpazi[i].length; j++) {
-        // Decritta
+*/
+
+    for (var i = 0; i < messaggio_crittografato.length; i++) {
+        // Decritta 
         messaggioDecrittato += String.fromCharCode(
-          decritta(critta(separazioneSpazi[i][j].charCodeAt(0)))
-        );
+            decritta_chiavePrivataUtente(messaggio_crittografato[i].charCodeAt(0), e.data[1][0], e.data[1][1]));
       }
-    }
-    */
     
-    console.log("Message received from main script (crypted) " + messaggioCrittato);
-    messaggioCrittato = messaggioCrittato
-    self.postMessage(messaggioCrittato)
+    console.log("messaggioDecrittato = " + messaggioDecrittato); 
+
+
+    /*
+    console.log(
+      "Message received from main script (crypted) " + messaggioCrittato
+    );
+  console.log(
+      "Message received from main script (decrypted) " + messaggioDecrittato
+    );*/
+    //messaggioCrittato = messaggioCrittato
+    self.postMessage(messaggioDecrittato)
     
   };
