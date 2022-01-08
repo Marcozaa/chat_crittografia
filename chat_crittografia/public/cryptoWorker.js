@@ -69,11 +69,11 @@ function modular_pow(base, exponent, modulus) {
 
   onmessage = function (e) {
 
-    console.log("e.data worker2 = " + e.data[0] + " CHIAVE OTHER = " + e.data[1]); 
+    //console.log("e.data worker2 = " + e.data[0] + " CHIAVE OTHER = " + e.data[1]); 
   
   
     var messaggio = e.data[0];
-    const separazioneSpazi = messaggio.split(" ");
+    const separazioneSpazi = messaggio.split("");
     var messaggioCrittato = "";
     for (var i = 0; i < separazioneSpazi.length; i++) {
       for (var j = 0; j < separazioneSpazi[i].length; j++) {
@@ -96,7 +96,7 @@ function modular_pow(base, exponent, modulus) {
     }
     */
     
-    console.log("Message received from main script (crypted) " + messaggioCrittato);
+    //console.log("Message received from main script (crypted) " + messaggioCrittato);
     messaggioCrittato = messaggioCrittato
     self.postMessage(messaggioCrittato)
     

@@ -71,7 +71,7 @@ function modular_pow(base, exponent, modulus) {
 
 
   onmessage = function (e) {
-    console.log("e.data worker3 = " + e.data[0] + " CHIAVE PRIVATA = " + e.data[1][0]+ ","+ e.data[1][1]);
+    //console.log("e.data worker3 = " + e.data[0] + " CHIAVE PRIVATA = " + e.data[1][0]+ ","+ e.data[1][1]);
   
   
     var messaggio = e.data[0];
@@ -97,7 +97,7 @@ function modular_pow(base, exponent, modulus) {
             decritta_chiavePrivataUtente(messaggio_crittografato[i].charCodeAt(0), e.data[1][0], e.data[1][1]));
       }
     
-    console.log("messaggioDecrittato = " + messaggioDecrittato); 
+    //console.log("messaggioDecrittato da e3 = " + messaggioDecrittato); 
 
 
     /*

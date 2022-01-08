@@ -217,8 +217,8 @@
 
     var messaggio_crittografato_chiavepub_other;
 
-    workCrypto.addEventListener('message', function (e) {
-      socket.emit("chat message", e.data)
+    workCrypto.addEventListener('message', function (e) { // qui riceviamo i messaggi dopo che sono stati crittati con la chiave pubblica del destinatario
+      socket.emit("messagge_to_decrypt", e.data)
     }, false);
 
 
@@ -230,19 +230,14 @@
 
 
 
-    function sendCrypted(messaggio) {
-      socket.emit("chat message", messaggio);
-
-    }
-
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (input.value) {
         console.log("CHIAVE PUBBLICA OTHER: " + chiavePubblica_Other)
         workCrypto.postMessage([input.value, chiavePubblica_Other])
+        //socket.emit("chat message", input.value);
 
-        socket.emit("chat message", input.value);
         input.value = "";
       }
     });
@@ -260,6 +255,23 @@
 
 
     var chiavePubblica_Other = ""
+
+    socket.on("messaggio_crittato_da_mittente", function (msg, id_utente) {
+      if (id_utente != socket.id) { // caso destinatario
+        console.log("================")
+        decryptWorker.postMessage([msg, chiavePrivata])
+      }
+    })
+
+
+    decryptWorker.addEventListener('message', function (e) {
+      console.log("Messaggio decrittato dal destinatario: " + e.data)
+      var item = document.createElement("li");
+      item.textContent = e.data
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+
+    })
 
     socket.on("public-key", function (chiave, id_utente) {
       var key = document.createElement("li");
@@ -294,7 +306,6 @@
       key.className = "userKey"
       key.textContent = chiave;
       chiavePubblica_Other = chiave
-      console.log("==============================================")
       document.getElementById("keys").appendChild(key)
     })
 
@@ -304,18 +315,25 @@
 
       if (x.matches) {
         item.textContent = "> " + msg
-        decryptWorker.postMessage([msg, chiavePrivata])
+        /*decryptWorker.postMessage([msg, chiavePrivata])
         decryptWorker.addEventListener('message', function (e) {
           console.log("Messaggio decrittato dal destinatario: " + e.data)
-        })
+          var item = document.createElement("li");
+          item.textContent=e.data
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+
+        })*/
 
       } else {
+        /*
         item.textContent = id + "> " + msg;
         console.log("----------------")
         decryptWorker.postMessage([msg, chiavePrivata])
         decryptWorker.addEventListener('message', function (e) {
           console.log("Messaggio decrittato dal destinatario: " + e.data)
         })
+        */
       }
       if (id != socket.id) {
         item.style.color = "white";

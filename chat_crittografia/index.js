@@ -39,6 +39,14 @@ io.on('connection', (socket) => { // Quando un socket accede/ si connette a loca
     io.to(id).emit("chiave-inserire", chiave, id, idOwner)
   })
 
+  socket.on("messaggio-crittato", (payload) => {
+    
+  })
+
+  socket.on("messagge_to_decrypt", (payload,id) => {
+    io.to(stanza).emit("messaggio_crittato_da_mittente" , payload, id);
+    
+  })
 
   // Gestione cambio da stanza
   socket.on('room-change', (roomid) => {
