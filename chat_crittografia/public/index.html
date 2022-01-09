@@ -133,6 +133,21 @@
       display: flex
     }
 
+    .inserisciImmagine {
+      filter: invert();
+      cursor: pointer;
+      transform: scale(0.8);
+    }
+
+    #my_file {
+      display: none;
+    }
+
+    .immagine {
+      width: 20vw;
+    }
+
+
     .logs {}
 
     #messages>li:nth-child(odd) {}
@@ -178,7 +193,10 @@
     </div>
   </div>
   <form id="form" action="">
-    <input id="input" autocomplete="off" /><button>Send</button>
+    <input id="input" autocomplete="off" /><img id="imgbtn" class="inserisciImmagine"
+      src="https://cdn-icons.flaticon.com/png/512/304/premium/304985.png?token=exp=1641740958~hmac=bcb082f590e1e070533e40526e5eceef" />
+    <input type="file" id="my_file">
+    <button>Send</button>
   </form>
 
 
@@ -211,6 +229,31 @@
     }, false);
 
 
+    // Eventlistener inserimento immagine input
+    document.getElementById("imgbtn").addEventListener("click", function () {
+      document.getElementById('my_file').click();
+
+    });
+
+
+    document.getElementById('my_file').addEventListener('change', function () {
+
+      var data = this.files[0];
+      var reader = new FileReader();
+      reader.onload = function (evt) {
+        var msg = {};
+        msg.file = evt.target.result;
+        msg.fileName = data.name;
+        socket.emit("base64 file", msg);
+        console.log(msg)
+      };
+      reader.readAsDataURL(data);
+
+
+
+    }, false);
+
+    /////////////////
 
     var workCrypto = new Worker("cryptoWorker.js");
     var decryptWorker = new Worker("uncryptWorker.js");
@@ -417,6 +460,21 @@
 
       document.getElementById("logs").appendChild(log)
     })
+
+
+
+
+
+    // showing media to ui 
+    socket.on("base64 image", (msg) => {
+      console.log("as", msg);
+
+      var immagine = document.createElement("img");
+      immagine.src = msg.file
+      immagine.className = "immagine"
+      messages.appendChild(immagine)
+
+    });
 
     /*var worker = new Worker('worker.js')
     worker.postMessage('Happy Birthday!')
