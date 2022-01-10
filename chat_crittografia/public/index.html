@@ -16,7 +16,11 @@
       display: flex;
     }
 
-    .left {}
+    .left {
+      width: 60vw;
+      overflow-wrap: break-word;
+
+    }
 
     .right {
       width: 40vw;
@@ -137,16 +141,26 @@
       filter: invert();
       cursor: pointer;
       transform: scale(0.8);
+
+
     }
+
+    .messaggio {}
 
     #my_file {
       display: none;
     }
 
     .immagine {
-      width: 20vw;
+      width: 30vw;
+      padding: 0.5rem 1rem;
     }
 
+    .divider {
+      width: 70%;
+      background: grey;
+      height: 1px;
+    }
 
     .logs {}
 
@@ -261,7 +275,7 @@
     var messaggio_crittografato_chiavepub_other;
 
     workCrypto.addEventListener('message', function (e) { // qui riceviamo i messaggi dopo che sono stati crittati con la chiave pubblica del destinatario
-      socket.emit("messagge_to_decrypt", e.data)
+      socket.emit("messagge_to_decrypt", e.data, socket.id)
     }, false);
 
 
@@ -299,21 +313,29 @@
 
     var chiavePubblica_Other = ""
 
+    var idUtenteMessaggio
     socket.on("messaggio_crittato_da_mittente", function (msg, id_utente) {
-      if (id_utente != socket.id) { // caso destinatario
-        console.log("================")
-        decryptWorker.postMessage([msg, chiavePrivata])
-      }
+      // console.log("================" + id_utente)
+      idUtenteMessaggio = id_utente
+      decryptWorker.postMessage([msg, chiavePrivata])
+
     })
 
 
     decryptWorker.addEventListener('message', function (e) {
       console.log("Messaggio decrittato dal destinatario: " + e.data)
+      var utenteId = document.createElement("li");
+      utenteId.textContent = idUtenteMessaggio
+      utenteId.style.color = "white"
+      messages.appendChild(utenteId);
       var item = document.createElement("li");
+      item.className = "messaggio"
       item.textContent = e.data
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
-
+      var divisore = document.createElement("div")
+      divisore.className = "divider"
+      messages.appendChild(divisore)
     })
 
     socket.on("public-key", function (chiave, id_utente) {
@@ -468,12 +490,17 @@
     // showing media to ui 
     socket.on("base64 image", (msg) => {
       console.log("as", msg);
-
+      var utenteId = document.createElement("li");
+      utenteId.textContent = idUtenteMessaggio
+      utenteId.style.color = "white"
+      messages.appendChild(utenteId);
       var immagine = document.createElement("img");
       immagine.src = msg.file
       immagine.className = "immagine"
       messages.appendChild(immagine)
-
+      var divisore = document.createElement("div")
+      divisore.className = "divider"
+      messages.appendChild(divisore)
     });
 
     /*var worker = new Worker('worker.js')
